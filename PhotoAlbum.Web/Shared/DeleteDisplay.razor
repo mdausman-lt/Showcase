@@ -1,0 +1,31 @@
+﻿<div class="card mt-3 m-auto" style="width:400px;">
+    <h5 class="card-header">Confirm Delete</h5>
+
+    <div class="card-body">
+        <div class="mb-3">Do you want to delete '@Name'?</div>
+
+        <div class="form-group text-end">
+            <input type="submit" value="Delete" @onclick="DeleteAsync" class="btn btn-danger" />
+            <input type="submit" value="Cancel" @onclick="CancelAsync" class="btn btn-outline-primary ms-2" />
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback OnDelete { get; set; }
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+    [Parameter]
+    public string Name { get; set; }
+
+    private async Task DeleteAsync()
+    {
+        await OnDelete.InvokeAsync();
+    }
+
+    private async Task CancelAsync()
+    {
+        await OnCancel.InvokeAsync();
+    }
+}

@@ -1,0 +1,138 @@
+﻿<div class="row" hidden="@hidden">
+    <div class="col-md" hidden="@(pages == 1)">
+        <ul class="pagination">
+            @if (page == 1)
+            {
+                <li class="page-item disabled">
+                    <span class="page-link bi bi-arrow-bar-left" />
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link bi bi-arrow-left" />
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link bi bi-arrow-bar-left" href="" @onclick="() => ShowPageAsync(1)" @onclick:preventDefault />
+                </li>
+                <li class="page-item">
+                    <a class="page-link bi bi-arrow-left" href="" @onclick="PrevPage" @onclick:preventDefault />
+                </li>
+            }
+
+            @for (int index = page - 2; index <= page + 2; index++)
+            {
+                int pageNum = index;
+                @if (index > 0 && index <= pages)
+                {
+                    if (index == page)
+                    {
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">@index</span>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="" @onclick="() => ShowPageAsync(pageNum)" @onclick:preventDefault>@index</a>
+                        </li>
+                    }
+                }
+            }
+
+            @if (page == pages)
+            {
+                <li class="page-item disabled">
+                    <span class="page-link bi bi-arrow-right" />
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link bi bi-arrow-bar-right" />
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link bi bi-arrow-right" href="" @onclick="NextPage" @onclick:preventDefault />
+                </li>
+                <li class="page-item">
+                    <a class="page-link bi bi-arrow-bar-right" href="" @onclick="() => ShowPageAsync(pages)" @onclick:preventDefault />
+                </li>
+            }
+        </ul>
+    </div>
+
+    <div class="col-md" hidden="@(pages == 1)">
+        Page Size:
+        <input id="QtyInput" type="number" inputmode="numeric" min="1" max="99" step="1" style="width: 50px;" value="@PageSize" @onchange="@((e) => PageSizeChangedAsync(e))" />
+    </div>
+
+    <div class="col-md text-sm-end">
+        <small>
+            @string.Format("{0:#,##0} {1}{2} in {3} Page{4}", ItemCount, ItemName, ItemCount == 1 ? string.Empty : "s", pages, pages == 1 ? string.Empty : "s")
+        </small>
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public EventCallback<int> OnPageClicked { get; set; }
+    [Parameter]
+    public EventCallback<int> OnPageSizeChanged { get; set; }
+
+    [Parameter]
+    public string ItemName { get; set; }
+    [Parameter]
+    public int ItemCount { get; set; }
+    [Parameter]
+    public int PageSize { get; set; }
+
+    private int page = 1;
+    private int pages = 0;
+    private int itemCount = 0;
+    private bool hidden;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        hidden = ItemCount == 0;
+
+        if (ItemCount != itemCount)
+        {
+            page = 1;
+            pages = Convert.ToInt32(Math.Ceiling(ItemCount / (double)PageSize));
+            itemCount = ItemCount;
+        }
+    }
+
+    private void PrevPage()
+    {
+        if (page > 1)
+        {
+            page--;
+            ShowPageAsync(page);
+        }
+    }
+
+    private void NextPage()
+    {
+        if (page < pages)
+        {
+            page++;
+            ShowPageAsync(page);
+        }
+    }
+
+    private async Task ShowPageAsync(int pageNum)
+    {
+        page = pageNum;
+        await OnPageClicked.InvokeAsync(pageNum);
+    }
+
+    private async Task PageSizeChangedAsync(ChangeEventArgs e)
+    {
+        PageSize = int.Parse(e.Value.ToString());
+        pages = Convert.ToInt32(Math.Ceiling(ItemCount / (double)PageSize));
+        await OnPageSizeChanged.InvokeAsync(PageSize);
+        await ShowPageAsync(1);
+    }
+}

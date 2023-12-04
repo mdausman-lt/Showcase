@@ -1,0 +1,77 @@
+﻿@inherits LayoutComponentBase
+@inject MessageContainer messageContainer
+@implements IDisposable
+@using System.Reflection
+
+<header class="fixed-top" style="background-color: white;">
+    <div class="container" style="width: 800px;">
+        <NavDisplay />
+    </div>
+
+    <div class="container text-bg-primary" style="width: 800px;">
+        <div class="d-flex flex-row align-items-center">
+            <div class="col text-nowrap fs-2 fw-bold">My Photo Albums</div>
+            <div class="col text-nowrap text-end">
+                <CascadingAuthenticationState>
+                    <AuthorizeView>
+                        <Authorized>
+                            Hi @context.User.Identity?.Name!
+                        </Authorized>
+                    </AuthorizeView>
+                </CascadingAuthenticationState>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container" style="width: 800px;">
+    <article class="content">
+        @Body
+    </article>
+</main>
+
+<footer class="footer fixed-bottom">
+    <div class="container-fluid text-bg-secondary text-center small">
+        Version @string.Format("{0}.{1}.{2}", version?.Major, version?.Minor, version?.Build)
+        Copyright &copy; @DateTime.Now.Year.ToString()
+        All rights reserved.
+    </div>
+</footer>
+
+<ToastDisplay ToastId="MainToast" @ref=toastDisplay />
+
+@code
+{
+    private ToastDisplay toastDisplay { get; set; }
+    private Version? version;
+    private MessageTypeEnum messageType;
+    private string message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        version = Assembly.GetExecutingAssembly().GetName().Version;
+        messageContainer.OnMessageChange += MessageChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!string.IsNullOrEmpty(message))
+        {
+            await toastDisplay.ShowAsync(messageType, message);
+            message = string.Empty;
+        }
+    }
+
+    protected void MessageChanged(MessageEventArgs messageEventArgs)
+    {
+        messageType = messageEventArgs.MessageType;
+        message = messageEventArgs.Message;
+    }
+
+    void IDisposable.Dispose()
+    {
+        messageContainer.OnMessageChange -= MessageChanged;
+    }
+}

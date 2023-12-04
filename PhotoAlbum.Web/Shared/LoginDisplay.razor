@@ -1,0 +1,24 @@
+﻿@using PhotoAlbum.Web.Providers
+
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            <a class="nav-link" href="@PageConstants.MyProfile">
+                <i class="bi bi-person-fill fs-4 mb-0" style="color: darkgrey;"></i>
+            </a>
+            <button class="btn btn-outline-primary btn-sm ms-2" @onclick="LogoutAsync">Log out</button>
+        </Authorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+
+@code {
+    [Inject] private NavigationManager navigationManager { get; set; }
+    [Inject] private AuthenticationStateProvider authStateProvider { get; set; }
+
+    private async Task LogoutAsync()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationStateAsync(null);
+        navigationManager.NavigateTo(PageConstants.Home, true);
+    }
+}

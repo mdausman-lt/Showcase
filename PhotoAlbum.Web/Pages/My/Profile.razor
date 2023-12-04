@@ -1,0 +1,66 @@
+﻿@inherits PageBase
+@attribute [Route(PageConstants.MyProfile)]
+
+@if (user == null && errorMessage == null)
+{
+    <SpinnerDisplay />
+}
+else if (errorMessage != null)
+{
+    <ErrorDisplay ErrorMessage="@errorMessage" />
+}
+else
+{
+    <ToastDisplay @ref="toastDisplay" />
+
+    <div class="card mt-3 m-auto" style="width:400px;">
+        <h5 class="card-header">
+            Profile
+        </h5>
+        <div class="card-body">
+            <EditForm Model="@user" OnValidSubmit="SaveAsync">
+                <DataAnnotationsValidator />
+
+                <div class="row mb-3">
+                    <div class="col-4"><label for="UsernameInput" class="form-label">Username</label></div>
+                    <div class="col-8">
+                        <InputText id="UsernameInput" class="form-control" DisplayName="Username" @bind-Value="@user!.Username" />
+                        <ValidationMessage For="@(() => user.Username)" style="color: red;" />
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4"><label for="NameInput" class="form-label">Name</label></div>
+                    <div class="col-8">
+                        <InputText id="NameInput" class="form-control" DisplayName="Name" @bind-Value="@user!.Name" />
+                        <ValidationMessage For="@(() => user.Name)" style="color: red;" />
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4"><label for="EmailInput" class="form-label">Email</label></div>
+                    <div class="col-8">
+                        <InputText id="EmailInput" class="form-control" DisplayEmail="Email" @bind-Value="@user!.Email" />
+                        <ValidationMessage For="@(() => user.Email)" style="color: red;" />
+                    </div>
+                </div>
+
+                <div class="alert alert-danger p-2" role="alert" hidden="@invalidblockHidden">
+                    <i class="bi bi-exclamation-triangle pe-2"></i>
+                    Username already exists
+                </div>
+
+                <div style="color: red;">
+                    <ValidationSummary />
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <a href="@PageConstants.MyChangePassword">Change Password</a>
+                    </div>
+                    <div class="col text-end">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}

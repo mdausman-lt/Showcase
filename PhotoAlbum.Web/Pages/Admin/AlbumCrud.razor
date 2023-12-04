@@ -1,0 +1,18 @@
+﻿@inherits PageBase
+@attribute [Route(PageConstants.AdminAlbumActionId)]
+
+@if (album == null && errorMessage == null)
+{
+    <SpinnerDisplay />
+}
+else if (errorMessage != null)
+{
+    <ErrorDisplay ErrorMessage="@errorMessage" />
+}
+else if (Action == ActionConstants.Delete)
+{
+    <DeleteDisplay Name="@album?.Name" OnDelete="DeleteAsync" OnCancel="Cancel" />
+}
+else
+{
+}

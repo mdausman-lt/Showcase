@@ -1,0 +1,54 @@
+﻿@inject IJSRuntime jsRuntime
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="@ToastId" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+        <div class="toast-header">
+            <img src="favicon.ico" height="16" width="16" class="me-2">
+            <strong class="me-auto">Photo Album Says</strong>
+            <small></small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body align-top">
+            <table>
+                <tr style="vertical-align: top;">
+                    <td style="font-size: 36px; color: @color;"><span class="bi @icon me-3" /></td>
+                    <td>@text</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public string ToastId { get; set; } = "DefaultToast";
+
+    private string text;
+    private string icon;
+    private string color;
+
+    public async Task ShowAsync(MessageTypeEnum messageType, string message)
+    {
+        switch (messageType)
+        {
+            case MessageTypeEnum.Error:
+                icon = "bi-x-circle";
+                color = "red";
+                break;
+            case MessageTypeEnum.Warning:
+                icon = "bi-exclamation-triangle-fill";
+                color = "#ffc107";
+                break;
+            default:
+                icon = "bi-info-circle-fill";
+                color = "#1b6ec2";
+                break;
+        }
+
+        text = message;
+        StateHasChanged();
+
+        await jsRuntime.InvokeVoidAsync("showToast", ToastId);
+    }
+}

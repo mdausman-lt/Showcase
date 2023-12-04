@@ -1,0 +1,97 @@
+﻿@inherits PageBase
+@attribute [Route(PageConstants.Home)]
+
+@if (photos == null && errorMessage == null)
+{
+    <SpinnerDisplay />
+}
+else if (errorMessage != null)
+{
+    <ErrorDisplay ErrorMessage="@errorMessage" />
+}
+else
+{
+    <div class="row mb-2">
+        <div class="col-1"><label for="AlbumInput" class="form-label">Album</label></div>
+        <div class="col-3">
+            <select id="AlbumInput" class="form-select" value="@albumId" @onchange="SelectedAlbumChangedAsync">
+                @foreach (var album in albums!)
+                {
+                    <option value=@album.AlbumId>@album.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-4">
+            <div class="input-group">
+                <InputText id="filterInput" class="form-control" placeholder="Filter..." aria-label="Filter..." aria-describedby="filterClear" Value="@filter" ValueChanged="FilterChanged" ValueExpression="() => filter" />
+                <span class="input-group-text" id="filterClear">
+                    <a href="" class="input-group-text btn-close" style="color: grey;" @onclick="@ClearFilter" @onclick:preventDefault data-bs-toggle="tooltip" data-bs-title="Clear Filter" />
+                </span>
+            </div>
+        </div>
+        <div class="col-4 text-end">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="ListRadio" name="ViewOptions" value="@ViewEnum.List.ToString()" @onchange="ViewChangedAsync" checked>
+                <label class="form-check-label" for="ListRadio">List</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="ThumbnailRadio" name="ViewOptions" value="@ViewEnum.Thumbnails.ToString()" @onchange="ViewChangedAsync">
+                <label class="form-check-label" for="ThumbnailRadio">Thumbnails</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-3 m-auto">
+        <h5 class="card-header">Photos</h5>
+
+        <div class="card-body">
+            <div hidden="@(view != ViewEnum.NoRecords)">
+                <div class="alert alert-warning" role="alert">
+                    <table>
+                        <tr style="vertical-align: middle;">
+                            <td style="font-size: 24px;"><span class="bi bi-exclamation-triangle-fill me-3" /></td>
+                            <td>Select an Album to see the photos.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div hidden="@(view != ViewEnum.List)">
+                <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="text-center">ID</th>
+                            <th scope="col">Title</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var photo in photos!.Skip(page * pageSize - pageSize - 1).Take(pageSize))
+                        {
+                            <tr>
+                                <td class="text-center">@photo.Id</td>
+                                <td>@photo.Title</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <PaginationDisplay PageSize="@pageSize" ItemName="Photo" ItemCount="@photos.Count()" OnPageClicked="PageClicked" OnPageSizeChanged="PageSizeChangedAsync" />
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-3 g-4" hidden="@(view != ViewEnum.Thumbnails)">
+                @foreach (var photo in photos!)
+                {
+                    <div class="col">
+                        <div class="card">
+                            <img src="@photo.ThumbnailUrl" class="card-img-top" alt="@photo.Title">
+                            <div class="card-body">
+                                <h5 class="card-title">@photo.Id</h5>
+                                <p class="card-text">@photo.Title</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,39 @@
+﻿@inherits PageBase
+@attribute [Route(PageConstants.AdminAlbums)]
+
+@if (albums == null && errorMessage == null)
+{
+    <SpinnerDisplay />
+}
+else if (errorMessage != null)
+{
+    <ErrorDisplay ErrorMessage="@errorMessage" />
+}
+else
+{
+    <div class="card mt-3 m-auto" style="width:400px;">
+        <h5 class="card-header">Albums</h5>
+
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col" class="p-1 text-center">Id</th>
+                        <th scope="col" class="p-1">Name</th>
+                        <th scope="col" class="p-1">&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (AlbumModel album in albums!)
+                    {
+                        <tr>
+                            <td class="p-1 text-center">@album.AlbumId</td>
+                            <td class="p-1">@album.Name</td>
+                            <td class="p-1"><a href="@PageConstants.AdminAlbum/@ActionConstants.Delete/@album.AlbumId" class="bi bi-x-circle" role="button" style="color: red;" /></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

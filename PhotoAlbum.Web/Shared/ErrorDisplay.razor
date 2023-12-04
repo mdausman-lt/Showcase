@@ -1,0 +1,13 @@
+﻿<div class="alert alert-danger" role="alert">
+    <table>
+        <tr style="vertical-align: top;">
+            <td style="font-size: 24px;"><span class="bi bi-exclamation-triangle-fill me-3" /></td>
+            <td>@ErrorMessage</td>
+        </tr>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public string? ErrorMessage { get; set; }
+}

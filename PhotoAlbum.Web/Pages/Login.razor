@@ -1,0 +1,55 @@
+﻿@inherits PageBase
+@attribute [Route(PageConstants.Login)]
+@attribute [AllowAnonymous]
+
+@if (loginModel == null && errorMessage == null)
+{
+    <SpinnerDisplay />
+}
+else if (errorMessage != null)
+{
+    <ErrorDisplay ErrorMessage="@errorMessage" />
+}
+else
+{
+    <div class="card mx-auto mt-5" style="width:400px;">
+        <h5 class="card-header text-center">Login</h5>
+
+        <div class="card-body">
+            <EditForm Model="@loginModel" OnValidSubmit="@AuthenticateAsync">
+                <DataAnnotationsValidator />
+
+                <div class="form-row mb-3">
+                    <label for="UsernameInput" class="form-label">Username</label>
+                    <InputText id="UsernameInput" @bind-Value="loginModel!.Username" class="form-control" />
+                    <ValidationMessage For="@(() => loginModel.Username)" style="color: red;" />
+                </div>
+                <div class="form-row mb-3">
+                    <label for="PasswordInput" class="form-label">Password</label>
+                    <InputText id="PasswordInput" @bind-Value="loginModel!.Password" class="form-control" type="password" />
+                    <ValidationMessage For="@(() => loginModel.Password)" style="color: red;" />
+                </div>
+                <div class="alert alert-danger p-2" role="alert" hidden="@invalidblockHidden">
+                    <i class="bi bi-exclamation-triangle pe-2"></i>
+                    Invalid Username or Password
+                </div>
+                <div class="form-check mb-3">
+                    <InputCheckbox class="form-check-input" @bind-Value="loginModel.RememberMe" />
+                    <label class="form-check-label">Remember Me</label>
+                </div>
+                <div class="form-row text-end">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </EditForm>
+        </div>
+
+        <div class="alert alert-info p-2 m-3" role="alert">
+            <table>
+                <tr style="vertical-align: middle;">
+                    <td style="font-size: 24px;"><span class="bi bi-info-circle-fill me-3" /></td>
+                    <td>Use admin/admin or user/user to login.</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+}
