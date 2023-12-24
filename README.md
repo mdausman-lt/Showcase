@@ -1,5 +1,5 @@
 # PhotoAlbum
-Lean TECHniques Technical Showcase
+Technical Showcase
 
 To run PhotoAlbum from Visual Studio:
   - Open the solution file
